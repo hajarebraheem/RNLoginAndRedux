@@ -1,6 +1,6 @@
 const auth = (state = {status: 'logged out', value: null}, action) =>{
     switch (action.type){
-        case 'SIGN_UP':
+        case 'LOGIN':
           return Object.assign({}, state,
             {status: 'logged in',
             value: action.payload

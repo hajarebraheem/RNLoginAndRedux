@@ -1,10 +1,10 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 
-const Show = (props) => {
+const Test = (props) => {
     return (
         <View style={styles.container}>
-            <Text>Show</Text>
+            <Text>You Typed "{props.typing}"</Text>
         </View>
         
     )
@@ -19,4 +19,4 @@ const styles = StyleSheet.create({
     },
   });
   
-export default Show
+export default Test
