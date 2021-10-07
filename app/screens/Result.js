@@ -1,32 +1,29 @@
-import React from 'react'
-import { NavigationContainer } from '@react-navigation/native'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { View, Text, StyleSheet } from 'react-native'
-import Test from './Test'
+import React, { useLayoutEffect } from 'react'
+import { View, Text, StyleSheet, Button } from 'react-native'
 
-const Result = (props) => {
-  const Stack = createNativeStackNavigator()
-  console.log(props.location.state.props.typing)
-  console.log("test");
-    return (
-        <View style={styles.container}>
-            <Text>You Typed "{props.typing}"</Text>
-        </View>
-        // <NavigationContainer>
-        //   <Stack.Navigator initialRouteName="Test">
-        //     <Stack.Screen name="Test" component={Test} />
-        //   </Stack.Navigator>
-        // </NavigationContainer>
-    )
+const Result = ({ navigation, route }) => {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button title="Logout" />
+      ),
+    })
+  }, [navigation])
+
+  return (
+    <View style={styles.container}>
+      <Text>You Typed "{route.params?.post.typing}"</Text>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-  });
-  
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
 export default Result

@@ -1,44 +1,38 @@
-import React, { useState } from 'react'
-import { useHistory } from 'react-router'
+import React, { useState, useLayoutEffect } from 'react'
 import { View, Text, StyleSheet, Button, TextInput, SafeAreaView } from 'react-native'
-import { useForm, Controller } from 'react-hook-form'
-import Logout from '../helper/Logout'
-import Result from './Result'
 
-const Typing = () => {
-  const [typing, setTyping] = useState()
-  const history = useHistory()
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isValid }
-  } = useForm({ mode: 'onBlur' })
+const Typing = ({ navigation, route }) => {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button title="Logout" />
+      ),
+    })
+  }, [navigation])
 
-  const onSubmit = (data) => {
-    console.log(`${data.name} from Typing.js`)
-    setTyping(data)
-    console.log(typing)
-    history.push('/result', <Result typing={typing}/>)
-    
+  const [typing, setTyping] = useState('')
+
+  const handleChange = (name, value) => {
+    setTyping({ typing, [name]: value })
+  }
+
+  const onSubmit = () => {
+    navigation.navigate({
+      name: "Result",
+      params: { post: typing },
+      merge: true
+    })
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Controller
-        control={control}
-        name="name"
-        render={({ field: { onChange, value, onBlur } }) => (
+      <Text>Hi {route.params?.post.username}</Text>
           <TextInput
-            iconName="person"
-            iconType="MaterialIcons"
             placeholder="Type Something To Pass it To The Next Screen"
-            value={value}
-            onBlur={onBlur}
-            onChangeText={value => onChange(value)}
+            autoCapitalize="none"
+            onChangeText={value => handleChange('typing', value)}
           />
-        )}
-      />
-      <Button title='Submit' onPress={handleSubmit(onSubmit)} />
+      <Button title='Done' onPress={onSubmit} />
     </SafeAreaView>
   )
 }

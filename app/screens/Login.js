@@ -1,64 +1,75 @@
 import React, { useState } from 'react'
-import { useHistory } from 'react-router'
-import { View, Text, StyleSheet, Button, TextInput, SafeAreaView } from 'react-native'
-import { useForm, Controller } from 'react-hook-form'
-import Typing from './Typing'
+import { View, StyleSheet, Button, TextInput, SafeAreaView } from 'react-native'
 
-const Login = () => {
+const Login = ({ navigation, route }) => {
   const [user, setUser] = useState({})
-  console.log(user)
-  const history = useHistory()
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isValid }
-  } = useForm({ mode: 'onBlur' })
 
-  const goTyping = () =>{
-    history.push('/typing', <Typing user={user}/>)
+  const handleChange = (name, value) => {
+    setUser({ ...user, [name]: value })
   }
-  const onSubmit = (data) => {
-    console.log(`${data} from Login.js`)
-    console.log(data);
-    setUser(data.username)
+
+  const onSubmit = () => {
+    if (user.username && user.password) {
+      // dispatch(signup(user))
+      navigation.navigate({
+        name: "Typing",
+        params: { post: user },
+        merge: true
+      })
+    }
+
+
+    // if (user.password !== user.password_confirm) {
+    //   console.log("not match");
+    //   // setOpen(true)
+    //   // setMessage("Password And Its Confirmation Did Not Match!")
+    // }
+    // else {
+    //   // dispatch(signup(user))
+    //   navigation.navigate({
+    //     name: "Typing",
+    //     params: { post: user },
+    //     merge: true
+    //   })
+    // }
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      {!user ?
-        <>
-          <Controller
-            control={control}
-            name="username"
-            render={({ field: { onChange, value, onBlur } }) => (
-                <TextInput
-                  iconName="person"
-                  iconType="MaterialIcons"
-                  placeholder="username"
-                  value={value}
-                  onBlur={onBlur}
-                  onChangeText={value => onChange(value)}
-                />
-            )}
-          />
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, value, onBlur } }) => (
-              <TextInput
-                iconName="password"
-                iconType="MaterialIcons"
-                placeholder="password"
-                value={value}
-                onBlur={onBlur}
-                onChangeText={value => onChange(value)}
-              />
-            )}
-          />
-          <Button title='Submit' onPress={handleSubmit(onSubmit)} />
-        </>
-        :
-        goTyping()}
+      {/* <TextInput
+        placeholder="First Name"
+        autoCapitalize="none"
+        onChangeText={value => handleChange('fname', value)}
+      />
+      <TextInput
+        placeholder="Last Name"
+        autoCapitalize="none"
+        onChangeText={value => handleChange('lname', value)}
+      /> */}
+      <TextInput
+        placeholder="Username"
+        autoCapitalize="none"
+        onChangeText={value => handleChange('username', value)}
+      />
+      {/* <TextInput
+        placeholder="Email"
+        autoCapitalize="none"
+        onChangeText={value => handleChange('email', value)}
+      /> */}
+      <TextInput
+        placeholder="Password"
+        autoCapitalize="none"
+        secureTextEntry={true}
+        onChangeText={value => handleChange('password', value)}
+      />
+      {/* <TextInput
+        placeholder="Password Confirmation"
+        autoCapitalize="none"
+        secureTextEntry={true}
+        onChangeText={value => handleChange('password_confirm', value)}
+      /> */}
+      <Button title='Login' onPress={onSubmit} />
+
     </SafeAreaView>
   )
 }
@@ -75,4 +86,3 @@ const styles = StyleSheet.create({
 export default Login
 
 
-// const Login = ({ navigation }) => {
