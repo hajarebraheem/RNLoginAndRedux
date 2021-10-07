@@ -11,3 +11,9 @@ export const loggout = () =>{
         payload: null
     }
 }
+export const typed = (string) =>{
+    return {
+        type: 'TYPED',
+        payload: string
+    }
+}

@@ -1,7 +1,11 @@
 import React, { useLayoutEffect } from 'react'
+import { useSelector } from 'react-redux'
 import { View, Text, StyleSheet, Button } from 'react-native'
 
 const Result = ({ navigation, route }) => {
+  const typed = useSelector(state => state.pass)
+  console.log(typed);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -12,7 +16,7 @@ const Result = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Text>You Typed "{route.params?.post.typing}"</Text>
+      <Text>You Typed ""</Text>
     </View>
   )
 }

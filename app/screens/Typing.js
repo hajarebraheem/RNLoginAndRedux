@@ -1,7 +1,13 @@
 import React, { useState, useLayoutEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { typed } from '../actions'
 import { View, Text, StyleSheet, Button, TextInput, SafeAreaView } from 'react-native'
 
 const Typing = ({ navigation, route }) => {
+  const [typing, setTyping] = useState('')
+  const login = useSelector(state => state.auth)
+  const dispatch = useDispatch()
+  
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -10,13 +16,12 @@ const Typing = ({ navigation, route }) => {
     })
   }, [navigation])
 
-  const [typing, setTyping] = useState('')
-
   const handleChange = (name, value) => {
     setTyping({ typing, [name]: value })
   }
 
   const onSubmit = () => {
+    dispatch(typed(typing))
     navigation.navigate({
       name: "Result",
       params: { post: typing },
@@ -27,6 +32,7 @@ const Typing = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Text>Hi {route.params?.post.username}</Text>
+      <Text>{login.value? "succeed": "failed"} </Text>
           <TextInput
             placeholder="Type Something To Pass it To The Next Screen"
             autoCapitalize="none"
@@ -47,10 +53,3 @@ const styles = StyleSheet.create({
 });
 
 export default Typing
-
-
-
-
-// import { useSelector } from 'react-redux'
-
-// const login = useSelector(state => state.auth)

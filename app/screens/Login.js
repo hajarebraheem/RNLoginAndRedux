@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { login } from '../actions'
 import { View, StyleSheet, Button, TextInput, SafeAreaView } from 'react-native'
 
 const Login = ({ navigation, route }) => {
   const [user, setUser] = useState({})
+  const dispatch = useDispatch()
 
   const handleChange = (name, value) => {
     setUser({ ...user, [name]: value })
@@ -10,7 +13,7 @@ const Login = ({ navigation, route }) => {
 
   const onSubmit = () => {
     if (user.username && user.password) {
-      // dispatch(signup(user))
+      dispatch(login(user))
       navigation.navigate({
         name: "Typing",
         params: { post: user },
@@ -84,5 +87,3 @@ const styles = StyleSheet.create({
 });
 
 export default Login
-
-
