@@ -1,6 +1,6 @@
 import { Alert } from 'react-native'
 import { useDispatch } from 'react-redux'
-import { loggout } from '../actions'
+import { loggout } from '../redux/actions'
 
 export const onLoggOut = () => {
     const dispatch = useDispatch()

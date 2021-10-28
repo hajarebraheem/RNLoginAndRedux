@@ -1,16 +1,24 @@
-import React, { useState, useLayoutEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { typed } from '../actions'
-import { loggout } from '../actions'
-import { View, Text, StyleSheet, TextInput, Image, Pressable } from 'react-native'
-import colors from '../colors-config/colors'
+import React, { useState, useLayoutEffect } from "react";
+import { useDispatch } from "react-redux";
+import { loggout, notes } from "../redux/actions";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TextInput,
+  Image,
+  Pressable,
+} from "react-native";
+import colors from "../colors-config/colors";
 
-const Typing = ({ navigation, route }) => {
-  const [typing, setTyping] = useState('')
-  const login = useSelector(state => state.auth)
-  const dispatch = useDispatch()
+const Typing = ({ navigation, route })=> {
+  const [note, setNote] = useState("");
+  const [alert, setAlert] = useState("");
 
-  let flag = true
+  const dispatch = useDispatch();
+
+  let flag = true;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -19,120 +27,168 @@ const Typing = ({ navigation, route }) => {
           <Text style={styles.logout}>Logout</Text>
         </Pressable>
       ),
-    })
-  }, [navigation])
+    });
+  }, [navigation]);
 
   const handleChange = (name, value) => {
-    setTyping(value)
+    setNote(value);
+    setAlert("");
+  };
+
+  if (note && /\S/.test(note)) {
+    flag = false;
+  } else {
+    flag = true;
   }
-
-  typing? flag = false : flag = true
-
   const onSubmit = () => {
-    dispatch(typed(typing))
+    if (flag) {
+      setAlert("Please Type Your Note Before Saving.");
+    } else {
+      const date = new Date();
+
+      dispatch(
+        notes(
+          note,
+          `${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString(
+            "en-US"
+          )}. `
+        )
+      );
+
+      setNote("");
+
+      navigation.navigate({
+        name: "Result",
+        merge: true,
+        params: route.params
+      });
+    }
+  };
+
+  const goToNotes = () => {
     navigation.navigate({
       name: "Result",
-      merge: true
-    })
-  }
+      merge: true,
+      params: route.params
+    });
+  };
 
   return (
     <View style={styles.container}>
-      {login.value ?
-        <>
+      {route.params.auth.value ? (
+        <View>
           <View style={styles.header}>
             <Image
               style={styles.image}
-              source={require('../images/idea.png')} />
+              source={require("../images/idea.png")}
+            />
             <View style={styles.insideHeader}>
-              <Text style={styles.headerText}>Hello {login.value?.username}</Text>
+              <Text style={styles.headerText}>
+                Hello {route.params.auth.value?.username}
+              </Text>
               <Text>Write notes, ideas, todos, and save!</Text>
             </View>
-
           </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="type ..."
-            autoCapitalize="none"
-            multiline={true}
-            selectionColor={colors.yellow}
-            onChangeText={value => handleChange('typing', value)}
-          />
+          <Text style={styles.alert}>{alert}</Text>
+
+          <ScrollView style={styles.scroll}>
+            <TextInput
+              style={styles.input}
+              placeholder="Type ..."
+              autoCapitalize="none"
+              multiline={true}
+              selectionColor={colors.yellow}
+              value={note}
+              onChangeText={(value) => handleChange("typing", value)}
+            />
+          </ScrollView>
 
           <Pressable
-            disabled={flag}
-            style={typing? styles.save : styles.disable}
-            onPress={onSubmit}>
+            style={note && /\S/.test(note) ? styles.save : styles.disable}
+            onPress={onSubmit}
+          >
             <Text style={styles.saveText}>Save</Text>
           </Pressable>
-        </>
-        :
+
+          <Pressable style={styles.save} onPress={goToNotes}>
+            <Text style={styles.saveText}>Go To Notes</Text>
+          </Pressable>
+        </View>
+      ) : (
         navigation.navigate({
           name: "Login",
-          merge: true
+          merge: true,
         })
-      }
+      )}
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-    paddingHorizontal: 30
+    paddingHorizontal: 30,
   },
   header: {
     paddingTop: 120,
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: 300
+    flexDirection: "row",
+    alignItems: "center",
+    width: 300,
   },
   image: {
     height: 100,
-    width: 100
+    width: 100,
   },
   insideHeader: {
     padding: 10,
-    width: 200
+    width: 200,
   },
   headerText: {
     fontSize: 20,
-    fontWeight: 'bold'
+    fontWeight: "bold",
+  },
+  alert: {
+    color: colors.darkPink,
+    marginTop: 10,
+    marginBottom: 5,
+    height: 20,
+  },
+  scroll: {
+    height: 250,
   },
   input: {
     backgroundColor: colors.lighterBlue,
     borderRadius: 5,
     height: 250,
-    marginTop: 20,
     padding: 15,
-    textAlignVertical: 'top'
+    textAlignVertical: "top",
   },
   save: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.blue,
     borderRadius: 3,
     marginTop: 20,
-    padding: 8
+    padding: 8,
   },
   disable: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.lighterBlue,
     borderRadius: 3,
     marginTop: 20,
-    padding: 8
+    padding: 8,
   },
   saveText: {
     color: colors.white,
     fontSize: 18,
     lineHeight: 35,
-    fontWeight: 'bold'
+    fontWeight: "bold",
   },
   logout: {
     color: colors.yellow,
-    fontSize: 18
-  }
-})
+    fontSize: 18,
+  },
+});
 
-export default Typing
+export default Typing;

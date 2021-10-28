@@ -1,107 +1,144 @@
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { login } from '../actions'
-import { View, StyleSheet, Pressable, TextInput, Image, Text } from 'react-native'
-import colors from '../colors-config/colors'
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { login } from '../redux/actions';
+// eslint-disable-next-line import/imports-first
+import { Formik } from 'formik';
+// eslint-disable-next-line import/imports-first
+import * as Yup from 'yup';
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  TextInput,
+  Image,
+  Text,
+// eslint-disable-next-line import/imports-first
+} from 'react-native';
+import colors from '../colors-config/colors';
 
 const Login = ({ navigation, route }) => {
-  const [user, setUser] = useState({})
-  const dispatch = useDispatch()
-  const loggedin = useSelector(state => state.auth)
-
-  const handleChange = (name, value) => {
-    setUser({ ...user, [name]: value })
-  }
-
-  const onSubmit = () => {
-    if (user.username && user.password) {
-      dispatch(login(user))
-      navigation.navigate({
-        name: "Typing",
-        merge: true
-      })
-    }
-  }
+  const dispatch = useDispatch();
+  const LoginSchema = Yup.object().shape({
+    username: Yup.string().required('Required'),
+    password: Yup.string().required('Required'),
+  });
 
   return (
     <View style={styles.container}>
-      {loggedin.status === "logged out" ?
-        <>
+      {route.params.auth.status === 'logged out' ? (
+        <View>
           <View style={styles.headerContainer}>
-            <View >
+            <View>
               <Text style={styles.headerText}>Welcome Back!</Text>
-              <Text style={[styles.headerText, styles.grayText]}>Login to continue.</Text>
+              <Text style={[styles.headerText, styles.grayText]}>
+                Login to continue.
+              </Text>
             </View>
 
             <View style={styles.logoContainer}>
               <Image
                 style={styles.logo}
+                // eslint-disable-next-line global-require
                 source={require('../images/drawing.png')}
               />
             </View>
           </View>
 
           <View style={styles.inputContainer}>
-            <TextInput
-              placeholder="Username"
-              autoCapitalize="none"
-              style={styles.input}
-              placeholderTextColor={colors.lighterBlue}
-              selectionColor={colors.yellow}
-              onChangeText={value => handleChange('username', value)}
-            />
+            <Formik
+              initialValues={{ username: '', password: '' }}
+              validationSchema={LoginSchema}
+              onSubmit={(values) => {
+                if (values.username && values.password) {
+                  dispatch(login(values));
+                  navigation.navigate({
+                    name: 'Typing',
+                    merge: true,
+                    params: route.params
+                  });
+                }
+              }}
+            >
+              {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
+                <View>
+                  <TextInput
+                    name="username"
+                    placeholder="Username"
+                    autoCapitalize="none"
+                    placeholderTextColor={colors.lighterBlue}
+                    selectionColor={colors.yellow}
+                    onChangeText={handleChange('username')}
+                    onBlur={handleBlur('username')}
+                    value={values.username}
+                    style={styles.input}
+                  />
+                  {errors.username && (
+                    <Text style={{ fontSize: 12, color: 'red' }}>
+                      {errors.username}
+                    </Text>
+                  )}
 
-            <TextInput
-              placeholder="Password"
-              autoCapitalize="none"
-              style={styles.input}
-              placeholderTextColor={colors.lighterBlue}
-              selectionColor={colors.yellow}
-              secureTextEntry={true}
-              onChangeText={value => handleChange('password', value)}
-            />
+                  <TextInput
+                    name="password"
+                    placeholder="Password"
+                    autoCapitalize="none"
+                    placeholderTextColor={colors.lighterBlue}
+                    selectionColor={colors.yellow}
+                    onChangeText={handleChange('password')}
+                    secureTextEntry
+                    onBlur={handleBlur('password')}
+                    value={values.password}
+                    style={styles.input}
+                  />
+                  {errors.password && (
+                    <Text style={{ fontSize: 12, color: 'red' }}>
+                      {errors.password}
+                    </Text>
+                  )}
 
-            <Pressable
-              style={styles.button}
-              onPress={onSubmit} >
-              <Text style={styles.buttonText}>Login</Text>
-            </Pressable>
+                  <Pressable onPress={handleSubmit} style={styles.button}>
+                    <Text style={styles.buttonText}>Login</Text>
+                  </Pressable>
+                </View>
+              )}
+            </Formik>
           </View>
-        </>
-        :
+        </View>
+      ) : (
         navigation.navigate({
-          name: "Typing",
-          merge: true
+          name: 'Typing',
+          merge: true,
+          params: route.params
         })
-      }
+      )}
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-    paddingHorizontal: 30
+    paddingHorizontal: 30,
   },
   headerContainer: {
     paddingTop: 160,
   },
   headerText: {
     fontSize: 24,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   grayText: {
-    color: colors.lighterBlue
+    color: colors.lighterBlue,
   },
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 30
+    paddingTop: 30,
   },
   logo: {
     width: 150,
-    height: 150
+    height: 150,
   },
   inputContainer: {
     paddingTop: 40,
@@ -110,22 +147,21 @@ const styles = StyleSheet.create({
     height: 35,
     borderBottomColor: colors.lighterBlue,
     borderBottomWidth: 1,
-    marginBottom: 20,
-    color: colors.lighterBlue,
-    color: colors.black
+    marginTop: 20,
+    color: colors.black,
   },
   button: {
     backgroundColor: colors.blue,
     borderRadius: 3,
-    marginTop: 30
+    marginTop: 30,
   },
   buttonText: {
     color: colors.white,
     fontSize: 18,
     lineHeight: 35,
     textAlign: 'center',
-    fontWeight: 'bold'
-  }
-})
+    fontWeight: 'bold',
+  },
+});
 
-export default Login
+export default Login;

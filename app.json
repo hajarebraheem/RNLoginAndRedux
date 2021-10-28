@@ -29,6 +29,6 @@
       "favicon": "./assets/favicon.png"
     }
   },
-  "name": "CwC_React_Native",
-  "displayName": "CwC_React_Native"
+  "name": "RNLoginAndRedux",
+  "displayName": "RNLoginAndRedux"
 }

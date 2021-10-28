@@ -1,7 +1,8 @@
-import auth from './auth'
-import pass from './pass'
+import auth from './auth';
+import notes from './notes';
 
-import { combineReducers } from 'redux'
+// eslint-disable-next-line import/imports-first
+import { combineReducers } from 'redux';
 // import { persistReducer } from 'redux-persist'
 // import storage from 'redux-persist/lib/storage'
 
@@ -10,8 +11,8 @@ import { combineReducers } from 'redux'
 //     storage,
 //     whitelist: ['auth']
 // }
-const allReducers = combineReducers( { auth, pass })
+const allReducers = combineReducers({ auth, notes });
 
 // export default persistReducer(persistConfig, allReducers)
 
-export default allReducers
+export default allReducers;
